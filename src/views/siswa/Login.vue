@@ -3,17 +3,17 @@ import { ArrowLeft, User, Lock, ArrowRight } from 'lucide-vue-next'
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center p-6">
+  <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-zinc-50 dark:bg-black">
     <div class="w-full max-w-md">
-      <router-link to="/" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors">
+      <router-link to="/" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 mb-6 sm:mb-8 transition-colors">
         <ArrowLeft class="w-4 h-4 mr-2" />
         Back to Home
       </router-link>
 
-      <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 shadow-sm">
-        <div class="mb-8">
-          <h1 class="text-2xl font-semibold mb-2">Student Login</h1>
-          <p class="text-zinc-500 dark:text-zinc-400">Welcome back! Please enter your details.</p>
+      <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div class="mb-6 sm:mb-8">
+          <h1 class="text-xl sm:text-2xl font-semibold mb-2">Student Login</h1>
+          <p class="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">Welcome back! Please enter your details.</p>
         </div>
 
         <form @submit.prevent="$router.push('/siswa/dashboard')" class="space-y-4">
@@ -24,7 +24,7 @@ import { ArrowLeft, User, Lock, ArrowRight } from 'lucide-vue-next'
               <input
                 type="text"
                 placeholder="ST-123456"
-                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm sm:text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
               />
             </div>
           </div>
@@ -36,14 +36,14 @@ import { ArrowLeft, User, Lock, ArrowRight } from 'lucide-vue-next'
               <input
                 type="password"
                 placeholder="••••••••"
-                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm sm:text-base focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
               />
             </div>
           </div>
 
           <button
             type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition-colors mt-4 flex items-center justify-center group"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition-colors mt-4 flex items-center justify-center group text-sm sm:text-base"
           >
             Sign In
             <ArrowRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
