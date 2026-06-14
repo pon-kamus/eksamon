@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   Users,
   BookOpen,
@@ -12,6 +13,7 @@ import {
 } from '@lucide/vue'
 import pb from '../lib/pocketbase'
 
+const router = useRouter()
 const isSidebarOpen = ref(false)
 const user = ref({ name: 'Emily Stone', role: 'teacher' })
 
@@ -26,9 +28,16 @@ const navItems = [
   { name: 'Messages', path: '/guru/messages', icon: MessageSquare },
 ]
 
+const handleLogout = () => {
+  pb.authStore.clear()
+  router.push('/guru')
+}
+
 onMounted(() => {
   if (pb.authStore.isValid) {
     user.value = pb.authStore.model
+  } else {
+    router.push('/guru')
   }
 })
 </script>
@@ -80,10 +89,10 @@ onMounted(() => {
       </nav>
 
       <div class="p-4 mt-auto border-t border-zinc-200 dark:border-zinc-800">
-        <router-link to="/guru" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-zinc-500 hover:text-red-500 transition-colors w-full text-left">
+        <button @click="handleLogout" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-zinc-500 hover:text-red-500 transition-colors w-full text-left">
           <LogOut class="w-5 h-5" />
           <span>Sign Out</span>
-        </router-link>
+        </button>
       </div>
     </aside>
 

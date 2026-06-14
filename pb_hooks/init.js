@@ -7,7 +7,7 @@ onBootstrap((e) => {
         // Add role field to users
         const roleField = users.fields.find(f => f.name === 'role');
         if (!roleField) {
-            users.fields.push(new SchemaField({
+            users.fields.add(new Field({
                 name: 'role',
                 type: 'select',
                 required: true,
@@ -27,8 +27,8 @@ onBootstrap((e) => {
                     { name: 'progress', type: 'number' },
                     { name: 'image', type: 'url' }
                 ],
-                listRule: "",
-                viewRule: ""
+                listRule: "@request.auth.id != ''",
+                viewRule: "@request.auth.id != ''"
             },
             {
                 name: 'assignments',
@@ -40,8 +40,8 @@ onBootstrap((e) => {
                     { name: 'submissions', type: 'text' },
                     { name: 'status', type: 'text' }
                 ],
-                listRule: "",
-                viewRule: ""
+                listRule: "@request.auth.id != ''",
+                viewRule: "@request.auth.id != ''"
             },
             {
                 name: 'audit_logs',
@@ -51,8 +51,8 @@ onBootstrap((e) => {
                     { name: 'user', type: 'text' },
                     { name: 'ip', type: 'text' }
                 ],
-                listRule: "",
-                viewRule: ""
+                listRule: "@request.auth.role = 'admin'",
+                viewRule: "@request.auth.role = 'admin'"
             }
         ];
 
@@ -67,11 +67,19 @@ onBootstrap((e) => {
                     viewRule: c.viewRule,
                 });
                 for (const f of c.fields) {
-                    collection.fields.push(new SchemaField(f));
+                    collection.fields.add(new Field(f));
                 }
                 $app.save(collection);
             }
         }
+
+        // Update users collection rules to allow role-based listing
+        // Admin and Teacher can see student list, others can only see themselves
+        users.listRule = 'id = @request.auth.id || @request.auth.role = "admin" || @request.auth.role = "teacher"';
+        users.viewRule = 'id = @request.auth.id || @request.auth.role = "admin" || @request.auth.role = "teacher"';
+        users.updateRule = 'id = @request.auth.id || @request.auth.role = "admin"';
+        users.deleteRule = '@request.auth.role = "admin"';
+        $app.save(users);
 
         // Seed Superusers (Admins)
         const superusers = $app.findCollectionByNameOrId("_superusers");
@@ -94,7 +102,11 @@ onBootstrap((e) => {
 
         for (const account of accounts) {
             try {
-                $app.findAuthRecordByEmail("users", account.email);
+                const existing = $app.findAuthRecordByEmail("users", account.email);
+                if (!existing.get("role")) {
+                    existing.set("role", account.role);
+                    $app.save(existing);
+                }
             } catch (err) {
                 const record = new Record(users);
                 record.setEmail(account.email);

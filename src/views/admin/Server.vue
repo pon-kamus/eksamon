@@ -1,5 +1,11 @@
 <script setup>
 import { Server, Cpu, Zap, Globe } from '@lucide/vue'
+
+const nodes = [
+  { name: 'US-East-1', latency: 24, load: 85 },
+  { name: 'EU-West-1', latency: 42, load: 70 },
+  { name: 'AP-South-1', latency: 31, load: 60 }
+]
 </script>
 
 <template>
@@ -49,21 +55,21 @@ import { Server, Cpu, Zap, Globe } from '@lucide/vue'
         <h3 class="text-white font-bold">Node Instances</h3>
       </div>
       <div class="p-0">
-        <div v-for="node in ['US-East-1', 'EU-West-1', 'AP-South-1']" :key="node" class="px-6 py-4 flex items-center justify-between border-b border-zinc-900/50">
+        <div v-for="node in nodes" :key="node.name" class="px-6 py-4 flex items-center justify-between border-b border-zinc-900/50">
           <div class="flex items-center space-x-4">
             <Server class="w-5 h-5 text-zinc-600" />
             <div>
-              <p class="text-sm font-bold text-white">{{ node }}</p>
+              <p class="text-sm font-bold text-white">{{ node.name }}</p>
               <p class="text-xs text-zinc-500">i-0a1b2c3d4e5f6g7h8</p>
             </div>
           </div>
           <div class="flex items-center space-x-8">
             <div class="text-right">
               <p class="text-xs text-zinc-500 uppercase tracking-widest">Latency</p>
-              <p class="text-sm font-mono text-emerald-500">{{ Math.floor(Math.random() * 50) + 10 }}ms</p>
+              <p class="text-sm font-mono text-emerald-500">{{ node.latency }}ms</p>
             </div>
             <div class="w-20 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-              <div class="h-full bg-emerald-500 w-[85%]"></div>
+              <div class="h-full bg-emerald-500" :style="{ width: node.load + '%' }"></div>
             </div>
           </div>
         </div>

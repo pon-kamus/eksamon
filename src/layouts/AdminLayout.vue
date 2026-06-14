@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   Shield,
   Users,
@@ -15,6 +16,7 @@ import {
 } from '@lucide/vue'
 import pb from '../lib/pocketbase'
 
+const router = useRouter()
 const isSidebarOpen = ref(false)
 const user = ref({ name: 'Admin Root', role: 'admin' })
 
@@ -30,9 +32,16 @@ const navItems = [
   { name: 'Settings', path: '/admin/settings', icon: Settings },
 ]
 
+const handleLogout = () => {
+  pb.authStore.clear()
+  router.push('/admin')
+}
+
 onMounted(() => {
   if (pb.authStore.isValid) {
     user.value = pb.authStore.model
+  } else {
+    router.push('/admin')
   }
 })
 </script>
@@ -72,10 +81,10 @@ onMounted(() => {
       </nav>
 
       <div class="mt-auto flex flex-col items-center space-y-8 w-full px-4">
-        <router-link to="/admin" class="hover:text-red-500 transition-colors flex items-center space-x-4 lg:space-x-0 w-full lg:w-auto">
+        <button @click="handleLogout" class="hover:text-red-500 transition-colors flex items-center space-x-4 lg:space-x-0 w-full lg:w-auto">
           <LogOut class="w-6 h-6 shrink-0" />
           <span class="lg:hidden font-medium text-sm text-zinc-500">Sign Out</span>
-        </router-link>
+        </button>
       </div>
     </aside>
 

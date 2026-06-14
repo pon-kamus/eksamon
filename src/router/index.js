@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import pb from '../lib/pocketbase'
 import Home from '../views/Home.vue'
 
 const routes = [
@@ -16,6 +17,7 @@ const routes = [
   {
     path: '/siswa/dashboard',
     component: () => import('../layouts/SiswaLayout.vue'),
+    meta: { requiresAuth: true, role: 'student' },
     children: [
       {
         path: '',
@@ -43,6 +45,7 @@ const routes = [
   {
     path: '/guru/dashboard',
     component: () => import('../layouts/GuruLayout.vue'),
+    meta: { requiresAuth: true, role: 'teacher' },
     children: [
       {
         path: '',
@@ -75,6 +78,7 @@ const routes = [
   {
     path: '/admin/dashboard',
     component: () => import('../layouts/AdminLayout.vue'),
+    meta: { requiresAuth: true, role: 'admin' },
     children: [
       {
         path: '',
@@ -108,6 +112,27 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiredRole = to.meta.role
+
+  if (requiresAuth && !pb.authStore.isValid) {
+    // Redirect to respective login if not authenticated
+    if (to.path.startsWith('/siswa')) return next('/siswa')
+    if (to.path.startsWith('/guru')) return next('/guru')
+    if (to.path.startsWith('/admin')) return next('/admin')
+    next('/')
+  } else if (requiresAuth && requiredRole && pb.authStore.model.role !== requiredRole) {
+    // Redirect if role doesn't match
+    if (pb.authStore.model.role === 'student') return next('/siswa/dashboard')
+    if (pb.authStore.model.role === 'teacher') return next('/guru/dashboard')
+    if (pb.authStore.model.role === 'admin') return next('/admin/dashboard')
+    next('/')
+  } else {
+    next()
+  }
 })
 
 export default router
