@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { BookOpen, Search, PlayCircle } from 'lucide-vue-next'
+import { BookOpen, Search, PlayCircle } from '@lucide/vue'
 import pb from '../../lib/pocketbase'
 
 const courses = ref([])

@@ -124,6 +124,25 @@ onBootstrap((e) => {
             }
         }
 
+        // Seed Assignments
+        const assignColl = $app.findCollectionByNameOrId("assignments");
+        const existingAssign = $app.findRecordsByFilter("assignments", "1=1", "-created", 1);
+        if (existingAssign.length === 0) {
+            const seedAssign = [
+                { title: 'Calculus Problem Set 4', course: 'Advanced Mathematics', due: 'Oct 15, 2025', submissions: '24/28', status: 'Active' },
+                { title: 'Linear Algebra Quiz', course: 'Theoretical Physics', due: 'Oct 12, 2025', submissions: '32/32', status: 'Grading' },
+            ];
+            for (const sa of seedAssign) {
+                const record = new Record(assignColl);
+                record.set("title", sa.title);
+                record.set("course", sa.course);
+                record.set("due", sa.due);
+                record.set("submissions", sa.submissions);
+                record.set("status", sa.status);
+                $app.save(record);
+            }
+        }
+
         // Seed Audit Logs
         const logsColl = $app.findCollectionByNameOrId("audit_logs");
         const existingLogs = $app.findRecordsByFilter("audit_logs", "1=1", "-created", 1);

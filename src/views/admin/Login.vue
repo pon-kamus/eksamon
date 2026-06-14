@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Shield, Lock, ArrowRight } from 'lucide-vue-next'
+import { ArrowLeft, Shield, Lock, ArrowRight } from '@lucide/vue'
 import pb from '../../lib/pocketbase'
 
 const router = useRouter()

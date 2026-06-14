@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   Users,
   BookOpen,
@@ -9,9 +9,11 @@ import {
   MessageSquare,
   Menu,
   X
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import pb from '../lib/pocketbase'
 
 const isSidebarOpen = ref(false)
+const user = ref({ name: 'Emily Stone', role: 'teacher' })
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -23,6 +25,12 @@ const navItems = [
   { name: 'Assignments', path: '/guru/assignments', icon: ClipboardList },
   { name: 'Messages', path: '/guru/messages', icon: MessageSquare },
 ]
+
+onMounted(() => {
+  if (pb.authStore.isValid) {
+    user.value = pb.authStore.model
+  }
+})
 </script>
 
 <template>
@@ -97,11 +105,11 @@ const navItems = [
           </button>
           <div class="flex items-center space-x-3 border-l border-zinc-200 dark:border-zinc-800 pl-4 lg:pl-6">
             <div class="text-right hidden sm:block">
-              <p class="text-sm font-medium">Prof. Emily Stone</p>
-              <p class="text-xs text-zinc-500">Mathematics Dept.</p>
+              <p class="text-sm font-medium">{{ user.name }}</p>
+              <p class="text-xs text-zinc-500 capitalize">{{ user.role }}</p>
             </div>
             <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden border-2 border-white dark:border-zinc-900">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Emily" alt="Avatar" />
+              <img :src="`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`" alt="Avatar" />
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { Search, Send, Paperclip } from 'lucide-vue-next'
+import { Search, Send, Paperclip } from '@lucide/vue'
 
 const contacts = [
   { id: 1, name: 'Principal Miller', role: 'Admin', active: true, lastMsg: 'The schedule for next week...' },

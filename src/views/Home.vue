@@ -1,5 +1,5 @@
 <script setup>
-import { GraduationCap, BookOpen, Settings } from 'lucide-vue-next'
+import { GraduationCap, BookOpen, Settings } from '@lucide/vue'
 </script>
 
 <template>

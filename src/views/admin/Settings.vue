@@ -1,5 +1,5 @@
 <script setup>
-import { Bell, Shield, Eye, Globe } from 'lucide-vue-next'
+import { Bell, Shield, Eye, Globe } from '@lucide/vue'
 </script>
 
 <template>

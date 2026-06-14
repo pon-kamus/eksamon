@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Activity, Bell, Search, Menu } from 'lucide-vue-next'
+import { Activity, Bell, Search, Menu } from '@lucide/vue'
 import pb from '../../lib/pocketbase'
 
 const metrics = ref([

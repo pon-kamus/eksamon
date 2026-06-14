@@ -1,5 +1,5 @@
 <script setup>
-import { Server, Cpu, Zap, Globe } from 'lucide-vue-next'
+import { Server, Cpu, Zap, Globe } from '@lucide/vue'
 </script>
 
 <template>

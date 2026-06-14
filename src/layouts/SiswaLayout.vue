@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   LayoutDashboard,
   BookOpen,
@@ -8,9 +8,11 @@ import {
   LogOut,
   Menu,
   X
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import pb from '../lib/pocketbase'
 
 const isSidebarOpen = ref(false)
+const user = ref({ name: 'Alex Rivers', role: 'student' })
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -21,6 +23,12 @@ const navItems = [
   { name: 'My Courses', path: '/siswa/courses', icon: BookOpen },
   { name: 'Schedule', path: '/siswa/schedule', icon: Calendar },
 ]
+
+onMounted(() => {
+  if (pb.authStore.isValid) {
+    user.value = pb.authStore.model
+  }
+})
 </script>
 
 <template>
@@ -95,11 +103,11 @@ const navItems = [
           </button>
           <div class="flex items-center space-x-3">
             <div class="text-right hidden sm:block">
-              <p class="text-sm font-medium">Alex Rivers</p>
-              <p class="text-xs text-zinc-500">Grade 11-A</p>
+              <p class="text-sm font-medium">{{ user.name }}</p>
+              <p class="text-xs text-zinc-500 capitalize">{{ user.role }}</p>
             </div>
             <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden border-2 border-white dark:border-zinc-900">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="Avatar" />
+              <img :src="`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`" alt="Avatar" />
             </div>
           </div>
         </div>

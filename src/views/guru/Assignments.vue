@@ -1,11 +1,27 @@
 <script setup>
-import { Plus, Filter, FileText } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import { Plus, Filter, FileText } from '@lucide/vue'
+import pb from '../../lib/pocketbase'
 
-const assignments = [
-  { id: 1, title: 'Calculus Problem Set 4', course: 'Advanced Calculus', due: 'Oct 15, 2025', submissions: '24/28', status: 'Active' },
-  { id: 2, title: 'Linear Algebra Quiz', course: 'Linear Algebra', due: 'Oct 12, 2025', submissions: '32/32', status: 'Grading' },
-  { id: 3, title: 'Integration Project', course: 'Advanced Calculus', due: 'Nov 01, 2025', submissions: '0/28', status: 'Draft' },
-]
+const assignments = ref([])
+const isLoading = ref(true)
+
+const fetchAssignments = async () => {
+  try {
+    const records = await pb.collection('assignments').getFullList({
+      sort: '-created',
+    })
+    assignments.value = records
+  } catch (err) {
+    console.error(err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchAssignments()
+})
 </script>
 
 <template>
@@ -27,7 +43,15 @@ const assignments = [
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4">
+    <div v-if="isLoading" class="space-y-4">
+      <div v-for="i in 3" :key="i" class="h-24 bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-2xl"></div>
+    </div>
+
+    <div v-else-if="assignments.length === 0" class="text-center py-12 text-zinc-500">
+      No assignments found.
+    </div>
+
+    <div v-else class="grid grid-cols-1 gap-4">
       <div v-for="assign in assignments" :key="assign.id" class="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="flex items-start space-x-4">
           <div class="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500">

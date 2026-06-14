@@ -1,5 +1,5 @@
 <script setup>
-import { Calendar as CalendarIcon, Clock, MapPin } from 'lucide-vue-next'
+import { Calendar as CalendarIcon, Clock, MapPin } from '@lucide/vue'
 
 const schedule = [
   { day: 'Monday', classes: [

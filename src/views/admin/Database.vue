@@ -1,5 +1,5 @@
 <script setup>
-import { Database, HardDrive, RefreshCw } from 'lucide-vue-next'
+import { Database, HardDrive, RefreshCw } from '@lucide/vue'
 </script>
 
 <template>

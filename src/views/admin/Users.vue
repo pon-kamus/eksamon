@@ -1,12 +1,32 @@
 <script setup>
-import { Search, UserPlus, Filter } from 'lucide-vue-next'
+import { ref, onMounted } from 'vue'
+import { Search, UserPlus, Filter } from '@lucide/vue'
+import pb from '../../lib/pocketbase'
 
-const users = [
-  { id: 1, name: 'Admin Root', role: 'Superadmin', status: 'Active', lastLogin: '2 mins ago' },
-  { id: 2, name: 'Emily Stone', role: 'Teacher', status: 'Active', lastLogin: '1 hour ago' },
-  { id: 3, name: 'Alex Rivers', role: 'Student', status: 'Active', lastLogin: '5 hours ago' },
-  { id: 4, name: 'John Doe', role: 'Student', status: 'Inactive', lastLogin: '2 days ago' },
-]
+const users = ref([])
+const isLoading = ref(true)
+
+const fetchUsers = async () => {
+  try {
+    const records = await pb.collection('users').getFullList({
+      sort: '-created',
+    })
+    users.value = records
+  } catch (err) {
+    console.error('Error fetching users:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchUsers()
+})
+
+const getInitials = (name) => {
+  if (!name) return '?'
+  return name.split(' ').map(n => n[0]).join('').toUpperCase()
+}
 </script>
 
 <template>
@@ -41,26 +61,30 @@ const users = [
             <tr>
               <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">User</th>
               <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Role</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Status</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Last Login</th>
+              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Email</th>
+              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest">Created</th>
               <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-right">Action</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-zinc-900">
+            <tr v-if="isLoading">
+              <td colspan="5" class="px-6 py-8 text-center text-zinc-500">Loading users...</td>
+            </tr>
+            <tr v-else-if="users.length === 0">
+              <td colspan="5" class="px-6 py-8 text-center text-zinc-500">No users found.</td>
+            </tr>
             <tr v-for="user in users" :key="user.id" class="hover:bg-zinc-900/20 transition-colors">
               <td class="px-6 py-4">
                 <div class="flex items-center space-x-3">
                   <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-xs font-bold text-white border border-zinc-700">
-                    {{ user.name[0] }}
+                    {{ getInitials(user.name) }}
                   </div>
-                  <span class="text-sm font-medium text-white">{{ user.name }}</span>
+                  <span class="text-sm font-medium text-white">{{ user.name || 'Anonymous' }}</span>
                 </div>
               </td>
-              <td class="px-6 py-4 text-sm">{{ user.role }}</td>
-              <td class="px-6 py-4 text-sm">
-                <span :class="user.status === 'Active' ? 'text-emerald-500' : 'text-zinc-600'">{{ user.status }}</span>
-              </td>
-              <td class="px-6 py-4 text-sm">{{ user.lastLogin }}</td>
+              <td class="px-6 py-4 text-sm capitalize">{{ user.role }}</td>
+              <td class="px-6 py-4 text-sm">{{ user.email }}</td>
+              <td class="px-6 py-4 text-sm">{{ new Date(user.created).toLocaleDateString() }}</td>
               <td class="px-6 py-4 text-right">
                 <button class="text-xs font-bold hover:text-white transition-colors">Edit</button>
               </td>

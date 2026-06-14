@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   Shield,
   Users,
@@ -12,9 +12,11 @@ import {
   Search,
   Menu,
   X
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import pb from '../lib/pocketbase'
 
 const isSidebarOpen = ref(false)
+const user = ref({ name: 'Admin Root', role: 'admin' })
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -27,6 +29,12 @@ const navItems = [
   { name: 'Server', path: '/admin/server', icon: Server },
   { name: 'Settings', path: '/admin/settings', icon: Settings },
 ]
+
+onMounted(() => {
+  if (pb.authStore.isValid) {
+    user.value = pb.authStore.model
+  }
+})
 </script>
 
 <template>
@@ -95,7 +103,9 @@ const navItems = [
             <Bell class="w-5 h-5" />
             <span class="absolute top-0 right-0 w-2 h-2 bg-purple-500 rounded-full"></span>
           </button>
-          <div class="w-8 h-8 bg-zinc-800 rounded-full border border-zinc-700"></div>
+          <div class="w-8 h-8 bg-zinc-800 rounded-full border border-zinc-700 overflow-hidden">
+             <img :src="`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`" alt="Avatar" />
+          </div>
         </div>
       </header>
 

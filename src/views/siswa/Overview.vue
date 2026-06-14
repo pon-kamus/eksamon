@@ -1,11 +1,33 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import {
   BookOpen,
   ChevronRight,
   TrendingUp,
   Clock,
   GraduationCap
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import pb from '../../lib/pocketbase'
+
+const coursesCount = ref(0)
+const userName = ref('Alex Rivers')
+
+const fetchDashboardData = async () => {
+  try {
+    const result = await pb.collection('courses').getList(1, 1)
+    coursesCount.value = result.totalItems
+
+    if (pb.authStore.isValid) {
+      userName.value = pb.authStore.model.name || 'Student'
+    }
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+onMounted(() => {
+  fetchDashboardData()
+})
 </script>
 
 <template>
@@ -13,8 +35,8 @@ import {
     <!-- Welcome Card -->
     <div class="relative overflow-hidden rounded-3xl bg-blue-600 p-6 lg:p-10 text-white">
       <div class="relative z-10">
-        <h1 class="text-2xl lg:text-3xl font-bold mb-2">Good morning, Alex!</h1>
-        <p class="text-blue-100">You have 3 assignments due this week. Stay focused!</p>
+        <h1 class="text-2xl lg:text-3xl font-bold mb-2">Good morning, {{ userName }}!</h1>
+        <p class="text-blue-100">You are enrolled in {{ coursesCount }} courses this semester. Stay focused!</p>
       </div>
       <div class="absolute right-0 bottom-0 opacity-10 -mr-10 -mb-10">
         <GraduationCap class="w-48 h-48 lg:w-64 lg:h-64" />
@@ -40,8 +62,8 @@ import {
           </div>
           <span class="text-xs font-medium text-zinc-400">Total</span>
         </div>
-        <p class="text-sm text-zinc-500 mb-1">Course Progress</p>
-        <p class="text-2xl font-bold">78%</p>
+        <p class="text-sm text-zinc-500 mb-1">Courses</p>
+        <p class="text-2xl font-bold">{{ coursesCount }}</p>
       </div>
       <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 sm:col-span-2 lg:col-span-1">
         <div class="flex items-center justify-between mb-4">

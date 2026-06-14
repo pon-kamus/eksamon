@@ -1,8 +1,32 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import {
   MoreHorizontal,
   Plus
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import pb from '../../lib/pocketbase'
+
+const courses = ref([])
+const isLoading = ref(true)
+
+const fetchTeacherCourses = async () => {
+  try {
+    const records = await pb.collection('courses').getFullList()
+    courses.value = records
+  } catch (err) {
+    console.error(err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchTeacherCourses()
+})
+
+const getInitials = (name) => {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+}
 </script>
 
 <template>
@@ -10,7 +34,7 @@ import {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl lg:text-3xl font-bold">My Active Courses</h1>
-        <p class="text-zinc-500">Managing 4 active classes for Fall 2025</p>
+        <p class="text-zinc-500">Managing {{ courses.length }} active classes for Fall 2025</p>
       </div>
       <button class="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-black px-4 py-2.5 rounded-xl font-medium flex items-center justify-center hover:opacity-90 transition-opacity">
         <Plus class="w-4 h-4 mr-2" />
@@ -19,45 +43,27 @@ import {
     </div>
 
     <!-- Course Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 flex flex-col">
+    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div v-for="i in 2" :key="i" class="h-48 bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-3xl"></div>
+    </div>
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div v-for="course in courses" :key="course.id" class="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 flex flex-col">
         <div class="flex items-start justify-between mb-6">
           <div class="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
-            <span class="font-bold">M1</span>
+            <span class="font-bold">{{ getInitials(course.name) }}</span>
           </div>
           <button class="text-zinc-400 hover:text-zinc-900"><MoreHorizontal /></button>
         </div>
-        <h3 class="text-lg font-bold mb-1">Advanced Calculus</h3>
-        <p class="text-sm text-zinc-500 mb-6">Grade 12-A • 28 Students</p>
+        <h3 class="text-lg font-bold mb-1">{{ course.name }}</h3>
+        <p class="text-sm text-zinc-500 mb-6">{{ course.teacher }} • 28 Students</p>
 
         <div class="space-y-3 mt-auto">
           <div class="flex justify-between text-sm mb-1">
             <span class="text-zinc-500">Curriculum Progress</span>
-            <span class="font-medium">65%</span>
+            <span class="font-medium">{{ course.progress }}%</span>
           </div>
           <div class="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-            <div class="h-full bg-blue-500 w-[65%]"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white dark:bg-zinc-900 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 flex flex-col">
-        <div class="flex items-start justify-between mb-6">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600">
-            <span class="font-bold">M2</span>
-          </div>
-          <button class="text-zinc-400 hover:text-zinc-900"><MoreHorizontal /></button>
-        </div>
-        <h3 class="text-lg font-bold mb-1">Linear Algebra</h3>
-        <p class="text-sm text-zinc-500 mb-6">Grade 11-B • 32 Students</p>
-
-        <div class="space-y-3 mt-auto">
-          <div class="flex justify-between text-sm mb-1">
-            <span class="text-zinc-500">Curriculum Progress</span>
-            <span class="font-medium">42%</span>
-          </div>
-          <div class="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-            <div class="h-full bg-emerald-500 w-[42%]"></div>
+            <div class="h-full bg-blue-500" :style="{ width: course.progress + '%' }"></div>
           </div>
         </div>
       </div>
