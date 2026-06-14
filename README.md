@@ -1,5 +1,45 @@
-# Vue 3 + Vite
+# Minimalist School Portal
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A functional, responsive school portal built with Vue 3, Tailwind CSS, and PocketBase.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Setup Instructions
+
+### 1. Backend (PocketBase)
+
+1.  **Download PocketBase**: Visit the [PocketBase Releases](https://github.com/pocketbase/pocketbase/releases) and download the appropriate binary for your OS.
+2.  **Place the Binary**: Move the `pocketbase` executable to the root directory of this project.
+3.  **Start the Server**:
+    ```bash
+    ./pocketbase serve
+    ```
+    The server will initialize the schema and seed initial accounts automatically via the `pb_hooks/init.js` script.
+4.  **Admin Panel**: Access the admin panel at `http://127.0.0.1:8090/_/` using:
+    -   **Email**: `admin@pb.local`
+    -   **Password**: `password123`
+
+### 2. Frontend (Vue 3)
+
+1.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+2.  **Start Development Server**:
+    ```bash
+    npm run dev
+    ```
+    The portal will be available at `http://localhost:5173`.
+
+## Initial Accounts
+
+All accounts use the password: `password123`
+
+-   **Student**: `student@school.edu`
+-   **Teacher**: `teacher@school.edu`
+-   **Administrator**: `admin@school.edu`
+
+## Features
+
+-   **Role-based Dashboards**: Separate layouts and subpages for Students, Teachers, and Admins.
+-   **Full Responsiveness**: Mobile-first design with collapsible navigation sidebars.
+-   **PocketBase Integration**: Authentication and data fetching handled via PocketBase.
+-   **Modern Stack**: Built with Vue 3 (Composition API), Vite, Tailwind CSS v4, and Lucide Icons.

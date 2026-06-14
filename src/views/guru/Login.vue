@@ -1,33 +1,67 @@
 <script setup>
-import { ArrowLeft, Mail, Lock, ArrowRight } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ArrowLeft, Mail, Lock, ArrowRight } from '@lucide/vue'
+import pb from '../../lib/pocketbase'
+
+const router = useRouter()
+const email = ref('teacher@school.edu')
+const password = ref('password123')
+const error = ref('')
+const isLoading = ref(false)
+
+const handleLogin = async () => {
+  isLoading.value = true
+  error.value = ''
+  try {
+    const authData = await pb.collection('users').authWithPassword(email.value, password.value)
+    if (authData.record.role !== 'teacher') {
+      pb.authStore.clear()
+      error.value = 'Unauthorized: Access restricted to teachers.'
+      return
+    }
+    router.push('/guru/dashboard')
+  } catch (err) {
+    error.value = 'Invalid email or password.'
+    console.error(err)
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center p-6">
+  <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 bg-zinc-50 dark:bg-black">
     <div class="w-full max-w-md">
-      <router-link to="/" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors">
+      <router-link to="/" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 mb-6 sm:mb-8 transition-colors">
         <ArrowLeft class="w-4 h-4 mr-2" />
         Back to Home
       </router-link>
 
-      <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 shadow-sm">
-        <div class="mb-8 text-center">
-          <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock class="w-8 h-8 text-emerald-600" />
+      <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div class="mb-6 sm:mb-8 text-center">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600" />
           </div>
-          <h1 class="text-2xl font-semibold mb-2">Teacher Login</h1>
-          <p class="text-zinc-500 dark:text-zinc-400">Access your faculty portal</p>
+          <h1 class="text-xl sm:text-2xl font-semibold mb-2">Teacher Login</h1>
+          <p class="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">Access your faculty portal</p>
         </div>
 
-        <form @submit.prevent="$router.push('/guru/dashboard')" class="space-y-4">
+        <form @submit.prevent="handleLogin" class="space-y-4">
+          <div v-if="error" class="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 text-xs font-medium border border-red-100 dark:border-red-900/30">
+            {{ error }}
+          </div>
+
           <div>
             <label class="block text-sm font-medium mb-1.5 ml-1">Email Address</label>
             <div class="relative">
               <Mail class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
+                v-model="email"
                 type="email"
                 placeholder="teacher@school.edu"
-                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                required
+                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
               />
             </div>
           </div>
@@ -37,19 +71,22 @@ import { ArrowLeft, Mail, Lock, ArrowRight } from 'lucide-vue-next'
             <div class="relative">
               <Lock class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
               <input
+                v-model="password"
                 type="password"
                 placeholder="••••••••"
-                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                required
+                class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm sm:text-base focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
               />
             </div>
           </div>
 
           <button
             type="submit"
-            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition-colors mt-4 flex items-center justify-center group"
+            :disabled="isLoading"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium py-3 rounded-xl transition-colors mt-4 flex items-center justify-center group text-sm sm:text-base"
           >
-            Sign In to Portal
-            <ArrowRight class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            {{ isLoading ? 'Authenticating...' : 'Sign In to Portal' }}
+            <ArrowRight v-if="!isLoading" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
       </div>
