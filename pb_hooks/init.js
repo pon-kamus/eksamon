@@ -73,6 +73,18 @@ onBootstrap((e) => {
             }
         }
 
+        // Seed Superusers (Admins)
+        const superusers = $app.findCollectionByNameOrId("_superusers");
+        try {
+            $app.findAuthRecordByEmail("_superusers", "admin@pb.local");
+        } catch (err) {
+            const admin = new Record(superusers);
+            admin.setEmail("admin@pb.local");
+            admin.setPassword("password123");
+            $app.save(admin);
+            console.log("Created default superuser: admin@pb.local");
+        }
+
         // Seed Users
         const accounts = [
             { email: 'student@school.edu', password: 'password123', role: 'student', name: 'Alex Rivers' },

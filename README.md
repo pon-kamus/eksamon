@@ -13,6 +13,9 @@ A functional, responsive school portal built with Vue 3, Tailwind CSS, and Pocke
     ./pocketbase serve
     ```
     The server will initialize the schema and seed initial accounts automatically via the `pb_hooks/init.js` script.
+4.  **Admin Panel**: Access the admin panel at `http://127.0.0.1:8090/_/` using:
+    -   **Email**: `admin@pb.local`
+    -   **Password**: `password123`
 
 ### 2. Frontend (Vue 3)
 
